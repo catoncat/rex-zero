@@ -231,35 +231,73 @@ async function runShots(): Promise<void> {
   rmSync(mockStoreDir, { recursive: true, force: true });
   mkdirSync(rawDir, { recursive: true });
   const storeShotsDir = join(ROOT, "store/screenshots");
+  const docsShotsDir = join(ROOT, "docs/screenshots");
+  rmSync(storeShotsDir, { recursive: true, force: true });
+  rmSync(docsShotsDir, { recursive: true, force: true });
   mkdirSync(storeShotsDir, { recursive: true });
+  mkdirSync(docsShotsDir, { recursive: true });
 
-  // Scripted deterministic tour across all 6 core scenes at 320x170:
-  // 25: Fleet Priority Inbox -> 55: Approval Card -> 85: Approved Clean Reader ->
-  // 115: Ghostty VT Terminal -> 165: Composer + Rime Pinyin Candidates -> 222: Tailnet & QR Pairing
+  // Scripted deterministic tour across all 9 core scenes at 320x170 (12px compact font, zero toast overlap):
+  //  1) 62  -> 01-inbox.png          (Priority Inbox / Recent Tasks, 4 cards visible)
+  //  2) 86  -> 02-hosts.png          (Accordion Host Browser with mini's 2 windows)
+  //  3) 110 -> 08-settings.png       (Settings & Multi-Connection Center)
+  //  4) 142 -> 03-approval.png       (Live Reader + 1-Key Approval Card at 12px)
+  //  5) 168 -> 05-voice-asr.png      (Streaming Voice Dictation + 8-bar Mic Meter)
+  //  6) 244 -> 06-composer-ime.png   (Multi-Line Cursor Draft + Offline Rime Pinyin Candidates)
+  //  7) 338 -> 04-terminal.png       (libghostty-vt Direct PTY ANSI Telemetry Table on cp0)
+  //  8) 360 -> 07-quick-switch.png   (MRU Quick Switcher Overlay across recent tasks)
+  //  9) 396 -> 09-tailnet-pair.png   (Userspace Tailscale & QR Pairing)
   const script =
     process.argv[3] && !process.argv[3].startsWith("--")
       ? process.argv[3]
       : [
-          "25:shot",
-          "35:key:Enter",
-          "55:shot",
-          "65:key:1",
-          "85:shot",
-          "95:key:Control+t",
-          "115:shot",
-          "125:key:Control+t",
-          "132:key:p",
-          "136:key:n",
-          "139:key:i",
-          "142:key:h",
-          "145:key:a",
-          "148:key:o",
+          // Switch global font from 16px -> 14px -> 12px compact, wait for toast to fade (~35 ticks)
+          "10:key:t",
+          "16:key:t",
+          "62:shot",
+          // Tab 1: Accordion Host Browser -> select mini (has 2 windows)
+          "70:key:Tab",
+          "76:key:x",
+          "86:shot",
+          // Tab 2: Settings & Connection Center -> select ASR row to show contextual hint
+          "94:key:Tab",
+          "100:key:x",
+          "110:shot",
+          // Back to Tab 0 -> open Card 1 (mini approval) in crisp 12px Reader
+          "118:key:Tab",
+          "124:key:1",
+          "142:shot",
+          // Press v -> Live Streaming Voice Dictation
+          "150:key:v",
           "168:shot",
-          "175:key:Escape",
-          "182:key:Escape",
-          "189:key:Escape",
-          "198:key:g",
-          "218:shot",
+          // Press Enter -> commit mock transcript into Multi-Line Draft, append text, type Rime Pinyin (already in 拼·全拼)
+          "176:key:Enter",
+          "190:type:，再核对打包和",
+          "204:key:q",
+          "208:key:u",
+          "212:key:a",
+          "216:key:n",
+          "220:key:x",
+          "224:key:i",
+          "228:key:a",
+          "232:key:n",
+          "244:shot",
+          // Clear rimeRaw (Esc) -> Close Composer (Esc) -> Leave Workspace safely (Backspace, never triggers Exit modal)
+          "252:key:Escape",
+          "260:key:Escape",
+          "268:key:Backspace",
+          // Open Card 4 (cp0 telemetry ANSI table) -> m (Direct PTY) -> wait 48 ticks for toast to fade
+          "278:key:4",
+          "288:key:m",
+          "340:shot",
+          // Open MRU Quick Switcher overlay (Control+Tab works even in direct-input PTY mode)
+          "348:key:Control+Tab",
+          "362:shot",
+          // Close Quick Switch -> exit terminal (Alt+Backspace) -> open Tailscale & QR Pairing (g)
+          "370:key:Escape",
+          "378:key:Alt+Backspace",
+          "386:key:g",
+          "398:shot",
         ].join(" ");
 
   await $`${HOST_PROGRAM} --mock --package ${POCKET} --store ${mockStoreDir} --shot ${rawDir} --script ${script}`
@@ -269,18 +307,22 @@ async function runShots(): Promise<void> {
   const files = readdirSync(rawDir)
     .filter(n => n.endsWith(".rgb565"))
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-  const names = [
-    "01-inbox.png",
-    "02-approval.png",
-    "03-reader.png",
-    "04-terminal.png",
-    "05-composer-ime.png",
-    "06-tailnet-pair.png",
+  // Frame index -> README 2x crisp filename & optional CardputerZero Store 1x (max 6) filename
+  const specs: readonly { doc: string; store?: string }[] = [
+    { doc: "01-inbox.png", store: "01-inbox.png" },
+    { doc: "02-hosts.png", store: "02-hosts.png" },
+    { doc: "08-settings.png" },
+    { doc: "03-approval.png", store: "03-approval.png" },
+    { doc: "05-voice-asr.png", store: "05-voice-asr.png" },
+    { doc: "06-composer-ime.png" },
+    { doc: "04-terminal.png", store: "04-terminal.png" },
+    { doc: "07-quick-switch.png" },
+    { doc: "09-tailnet-pair.png", store: "06-tailnet-pair.png" },
   ];
   const expectedFrameBytes = WIDTH * HEIGHT * 2;
-  if (files.length !== names.length) {
+  if (files.length !== specs.length) {
     throw new Error(
-      `Expected ${names.length} RGB565 screenshot frames in ${rawDir}, got ${files.length}: ${files.join(", ")}`,
+      `Expected ${specs.length} RGB565 screenshot frames in ${rawDir}, got ${files.length}: ${files.join(", ")}`,
     );
   }
   const frames = files.map(f => {
@@ -290,12 +332,16 @@ async function runShots(): Promise<void> {
     }
     return { file: f, raw };
   });
-  // Sync app-builder.json screenshot list order
   frames.forEach(({ file, raw }, idx) => {
-    writeFileSync(join(rawDir, file.replace(/\.rgb565$/, ".png")), rgb565ToPng(raw, 2));
-    writeFileSync(join(storeShotsDir, names[idx]!), rgb565ToPng(raw, 1));
+    const spec = specs[idx]!;
+    const png2x = rgb565ToPng(raw, 2);
+    writeFileSync(join(rawDir, file.replace(/\.rgb565$/, ".png")), png2x);
+    writeFileSync(join(docsShotsDir, spec.doc), png2x);
+    if (spec.store) {
+      writeFileSync(join(storeShotsDir, spec.store), rgb565ToPng(raw, 1));
+    }
   });
-  console.log(`shots ok: ${frames.length} frames -> ${storeShotsDir}`);
+  console.log(`shots ok: ${frames.length} frames -> ${docsShotsDir} (2x) & ${storeShotsDir} (6 Store 1x)`);
 }
 
 async function checkStorePolicy(): Promise<void> {
