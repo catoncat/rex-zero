@@ -1,0 +1,47 @@
+{
+  "app_name": "Rex Zero",
+  "package_name": "rex-zero",
+  "version": "0.2.0",
+  "bin_name": "rex-zero",
+  "description": "Native Rex terminal & AI agent mission control with built-in Tailscale, Rime Pinyin, and voice dictation",
+  "store": {
+    "summary": "Native Superlogical Rex client: fleet inbox, Ghostty VT, Tailscale & Rime",
+    "description": "Rex Zero turns the M5Stack CardputerZero into a 30fps pocket mission control for Superlogical Rex across your local Zero and remote Mac/Linux machines.\n\nKey features:\n- Fleet Priority Inbox: real-time OSC 7501 Program Status events surface blocked approvals, errors, and finished agent runs across all hosts with audio chimes and instant Fn+N jump.\n- Dual-Engine Workspace: read AI coding sessions (Antigravity, Codex, Claude Code) in a clean card reader with 1-key approval actions and auto-hiding per-pane drafts, or press Ctrl+T for a true libghostty-vt ANSI terminal with non-intrusive Peek vs Take-Over block sizing.\n- Built-in Userspace Tailscale (tsnet) & SSH: scan an on-screen QR code to join your tailnet without root or TUN conflicts alongside existing proxies, or connect via SSH dial-stdio with zero open ports.\n- Tri-Modal Input & QR Pairing: 46-key hardware typing, offline Rime Simplified/Double Pinyin (Ctrl+Space), optional streaming voice dictation (Ctrl+R), and a 5-minute LAN/Tailnet QR web pairing page to import SSH or ASR keys without typing them on device.",
+    "locales": {
+      "zh-CN": {
+        "title": "Rex Zero",
+        "summary": "原生 Rex 掌上总控台：跨机 Agent 收件箱、Ghostty 终端、内置 Tailscale 与拼音语音"
+      },
+      "ja": {
+        "title": "Rex Zero",
+        "summary": "Superlogical Rex ネイティブ端末：Agent 受信箱、Ghostty VT、内蔵 Tailscale"
+      }
+    },
+    "icon": "store/icon.png",
+    "screenshots": [
+      "store/screenshots/01-inbox.png",
+      "store/screenshots/02-approval.png",
+      "store/screenshots/03-reader.png",
+      "store/screenshots/04-terminal.png",
+      "store/screenshots/05-composer-ime.png",
+      "store/screenshots/06-tailnet-pair.png"
+    ],
+    "categories": ["Development", "AI"],
+    "permissions": {
+      "camera": false,
+      "microphone": true,
+      "imu": false,
+      "network": true,
+      "additional_hardware": false,
+      "background_service": false,
+      "external_display": false
+    },
+    "author": {
+      "display_name": "catoncat",
+      "github": "catoncat"
+    },
+    "source_repo": "https://github.com/catoncat/rex-zero",
+    "license": "MIT",
+    "share_code": "REXZ"
+  }
+}

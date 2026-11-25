@@ -1,0 +1,4 @@
+[submodule "vendor/pocketjs"]
+	path = vendor/pocketjs
+	url = https://github.com/catoncat/pocketjs.git
+	branch = rex-zero

@@ -1,0 +1,8 @@
+.build/
+.pocket-build/
+dist/
+node_modules/
+vendor/rexrs/
+app/fonts/DroidSansFallbackFull.ttf
+app/fonts/NotoSansCJKsc-Regular.otf
+app/fonts/cjk-chars.txt

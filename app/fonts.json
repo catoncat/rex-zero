@@ -1,0 +1,12 @@
+{
+  "fallback": [
+    "../vendor/pocketjs/assets/fonts/JetBrainsMono-Regular.ttf"
+  ],
+  "characters": "·•—°…↔π›»«↑↓←→⏎⌫⇥␣✓✗●○◆◇▶▸▷■□★☆⚠♪─│┌┐└┘├┤┬┴┼█▏",
+  "ranges": [
+    "U+2010-2027",
+    "U+2190-21FF",
+    "U+2500-257F",
+    "U+25A0-25FF"
+  ]
+}

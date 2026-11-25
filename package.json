@@ -1,0 +1,19 @@
+{
+  "name": "rex-zero",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Native PocketJS client for Superlogical Rex on the M5Stack CardputerZero",
+  "dependencies": {
+    "solid-js": "1.9.14"
+  },
+  "scripts": {
+    "setup": "bun scripts/setup.ts",
+    "build": "bun scripts/zero.ts build",
+    "deb": "bun scripts/zero.ts deb",
+    "shot": "bun scripts/zero.ts shot",
+    "check": "bun scripts/zero.ts check",
+    "install-zero": "bun scripts/zero.ts install"
+  }
+}
